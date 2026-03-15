@@ -348,6 +348,36 @@ def step_answer() -> None:
         con.close()
 
 
+
+def step_text() -> None:
+    con = connect_db()
+    try:
+        sql_path = SQL_DIR / "04_text_analysis.sql"
+        if not sql_path.exists():
+            raise RuntimeError(f"Missing SQL file: {sql_path}")
+        print(f"[text] running {sql_path}")
+        run_sql_file(con, sql_path)
+        for tbl in ("mart_description_themes", "mart_facility_themes"):
+            if table_exists(con, tbl):
+                export_table(con, tbl, MARTS_DIR / tbl)
+                print(f"[text] exported {tbl}")
+        print("[text] complete")
+    finally:
+        con.close()
+
+
+
+def step_ml() -> None:
+    """Train the ML model and write scores to the database."""
+    import subprocess, sys
+    ml_script = ROOT / "05_ml.py"
+    if not ml_script.exists():
+        raise RuntimeError(f"Missing: {ml_script}")
+    print("[ml] Running 05_ml.py...")
+    result = subprocess.run([sys.executable, str(ml_script)], check=True)
+    print("[ml] complete")
+
+
 def step_run_all(force_download: bool = False) -> None:
     ensure_dirs()
     step_extract(force=force_download)
@@ -366,6 +396,15 @@ def step_run_all(force_download: bool = False) -> None:
         step_answer()
     else:
         print("[run] skipping answer: src/sql/03_answer.sql not found yet")
+    if (SQL_DIR / "04_text_analysis.sql").exists():
+        step_text()
+    else:
+        print("[run] skipping text: src/sql/04_text_analysis.sql not found yet")
+    ml_script = ROOT / "05_ml.py"
+    if ml_script.exists():
+        step_ml()
+    else:
+        print("[run] skipping ml: 05_ml.py not found yet")
     print("[done] pipeline complete")
 
 
@@ -378,7 +417,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Option B take-home pipeline (DuckDB).")
     parser.add_argument(
         "command",
-        choices=["extract", "load", "profile", "model", "mart", "answer", "run"],
+        choices=["extract", "load", "profile", "model", "mart", "answer", "text", "ml", "run"],
         help="Pipeline step to run",
     )
     parser.add_argument(
@@ -400,6 +439,10 @@ def main() -> None:
         step_mart()
     elif args.command == "answer":
         step_answer()
+    elif args.command == "text":
+        step_text()
+    elif args.command == "ml":
+        step_ml()
     elif args.command == "run":
         step_run_all(force_download=args.force_download)
 

@@ -1,2 +1,17 @@
-duckdb>=0.10.0
-pandas>=2.0.0
+# CA Wastewater Enforcement Pipeline — Dependencies
+# Install: pip install -r requirements.txt
+# Windows (if permission error): pip install -r requirements.txt --user
+
+# Core pipeline
+duckdb>=1.5.0
+pandas>=2.2.0
+
+# Machine learning
+scikit-learn>=1.4.0
+
+# Dashboard
+streamlit>=1.55.0
+plotly>=6.6.0
+
+# Data serialisation (installed as streamlit dependency)
+pyarrow>=7.0
