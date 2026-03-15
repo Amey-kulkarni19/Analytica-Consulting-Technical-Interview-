@@ -46,7 +46,7 @@ python pipeline.py text       # 04_text_analysis.sql — NLP themes
 ```
 
 **View results interactively:**
-Open `dashboard.html` in any browser — no server needed.
+Open `dashboard.html` in any browser no server needed.
 The dashboard contains all charts, the NLP theme analysis, and the filterable top-25 table.
 
 ---
@@ -68,7 +68,7 @@ CA Open Data (two CSVs)
     stg_permits                ← typed, trimmed
     dim_facility               ← 1 row per WDID (coalesced from both sources)
     dim_action_type            ← severity rank 1–7, monetary flag
-    dim_time                   ← date spine 1987–2019, CA fiscal year
+    dim_time                   ← date span 1987–2019, CA fiscal year
     fact_enforcement           ← 1 row per action, severity/monetary denormalised in
           │
           ▼  02_mart.sql
@@ -82,7 +82,7 @@ CA Open Data (two CSVs)
 ```
 
 **What runs when:** `pipeline.py run` executes all steps in order.
-Each step is idempotent — `CREATE OR REPLACE TABLE` ensures re-runs don't duplicate.
+Each step is idempotent `CREATE OR REPLACE TABLE` ensures re-runs don't duplicate.
 `warehouse.duckdb` persists between runs and can be queried directly:
 ```bash
 duckdb data/warehouse.duckdb "SELECT * FROM top_25_facilities LIMIT 5"
@@ -96,18 +96,18 @@ duckdb data/warehouse.duckdb "SELECT * FROM top_25_facilities LIMIT 5"
 
 | Key | Tables | How discovered |
 |-----|--------|----------------|
-| `WDID` | enforcement + permits + all dims | Fetched live CSV headers from `data.ca.gov`; confirmed present in both raw files. Normalized to `UPPER(TRIM(...))` to handle whitespace/case inconsistencies. Join match rate: 94%+ |
-| `ENFORCEMENT ID (EID)` | fact only | Natural PK — confirmed unique per row in enforcement CSV |
+| `WDID` | enforcement + permits + all dims | Fetched CSV headers from `data.ca.gov`; confirmed present in both raw files. Normalized to `UPPER(TRIM(...))` to handle whitespace/case inconsistencies.|
+| `ENFORCEMENT ID (EID)` | fact only | Natural PK confirmed unique per row in enforcement CSV |
 | `REG MEASURE ID` | enforcement + permits | Links an enforcement action to its underlying permit; used for lineage |
 
 ### Key design decisions
 
-**Two staging tables, not one.** The permits and enforcement CSVs use completely different column naming conventions (`"UPPER CASE WITH SPACES"` vs `lowercase_snake_case`). A single staging layer would require unmaintainable conditional logic. Two clean staging tables that coalesce into shared dims is cleaner.
+**Two staging tables, not one.** The primary reason is that the two source files represent fundamentally different entities with different grains. **stg_enforcement** is an event log one row per enforcement action issued against a facility. **stg_permits** is a facility registry one row per regulatory measure a facility is enrolled in. They have different columns, different date semantics, and different business meanings. Merging them into a single staging table would create a wide, sparse table where half the columns are NULL depending on source, making the model harder to reason about and maintain.
 
-**`dim_facility` coalesces from both sources.** Facilities appear in enforcement without a corresponding permit record (unregulated sites, expired permits). Building `dim_facility` from permits only — the obvious first instinct — drops ~6% of WDIDs from the fact table. The UNION + COALESCE pattern ensures full coverage.
+**`dim_facility` coalesces from both sources.** Facilities appear in enforcement without a corresponding permit record (unregulated sites, expired permits). Building `dim_facility` from permits only the obvious first instinct drops ~6% of WDIDs from the fact table. The UNION + COALESCE pattern ensures full coverage.
 
-**Severity rank assigned at model time.** `dim_action_type` carries `severity_rank` (1–7) and `is_monetary` flag, and these are joined into `fact_enforcement` at build time. This means `mart_facility_monthly` and `03_answer.sql` never need to re-join the dimension — they read pre-computed severity directly from the fact.
-
+**Severity rank assigned at model time.** 
+Every enforcement action has a type — "Notice of Violation", "Admin Civil Liability", etc. The severity rank for each type lives in dim_action_type. When we build fact_enforcement, we join dim_action_type right then and copy severity_rank and is_monetary directly onto every row of the fact table.
 ---
 
 ## Client Answer: Top 25 Facilities
@@ -137,20 +137,21 @@ See `FINDINGS.md` for the full narrative and `dashboard.html` for the interactiv
 
 ### Tradeoffs
 
-- **Heuristic scoring vs. ML model.** A gradient-boosted classifier trained on "received ACL within 12 months" would outperform this scoring formula. The heuristic was chosen because it's auditable and explainable to a regulator — a black-box model score is harder to defend in an enforcement context.
-
-- **Min-max normalisation vs. percentile rank.** Min-max is sensitive to outliers (one facility with 10× the actions of any other compresses everyone else to near-zero on frequency). Percentile rank normalisation would be more robust. The tradeoff is interpretability — "you're in the 95th percentile for frequency" is less intuitive to a client than "your normalised frequency score is 0.82".
-
-- **Monthly mart granularity.** Weekly would add noise without signal — SMRs are monthly reports, so violations and actions cluster on monthly cycles. Daily would make the escalation z-score calculation unstable.
-
-- **NLP via keyword patterns vs. embeddings.** Regex is fast, explainable, and doesn't require a model deployment. For a production system, sentence-transformer embeddings + k-means clustering would discover themes the regex misses. The regex approach was chosen for reproducibility with no external API calls.
+**Heuristic + ML**
+The heuristic score is the primary ranking because it's explainable a regulator can see exactly why a facility ranked where it did. The ML model is a cross-check. Where both agree, high confidence. Where they disagree, that facility is worth a closer look.
+**Min-max normalisation**
+Scales all six scoring factors to the same 0–1 range so the weights actually mean what they say. The limitation is sensitivity to outliers. Percentile rank would be more robust but harder to explain to a non-technical audience.
+**Monthly granularity**
+Self-monitoring reports are filed monthly, so enforcement actions cluster on monthly cycles. Weekly or daily aggregation would add noise without adding signal.
+**Keyword matching for text analysis**
+Fast, reproducible, no external dependencies. An LLM-based classifier would be more powerful but adds cost and API dependency to the pipeline. Good enough for this dataset.
 
 ### Assumptions
 
-- `WDID` is stable over time. Facility mergers, acquisitions, or WDID reassignments would introduce false matches — not verifiable from this dataset alone.
-- Severity ranks for action types are assigned based on the published CIWQS enforcement hierarchy, not inferred from the data.
-- "Outstanding amount" = `TOTAL ASSESSMENT AMOUNT` − `TOTAL $ PAID/COMPLETED AMOUNT`, floored at 0. Negative values (over-payment) are treated as zero.
-- The dataset covers through early 2019. Recency scores are relative within that window.
+- WDID is stable. If a facility was sold or its ID reassigned, the model treats it as two facilities. Not verifiable from this data alone.
+- Severity ranks are judgment calls. Assigned based on the CIWQS enforcement hierarchy, not learned from data.
+- Outstanding = assessed minus paid, floored at zero. Negative values treated as zero.
+- Data stops at 2019. Recency scores are relative within that window. Cross-reference with live CIWQS before acting on these rankings.
 
 ### What I'd do with more time
 
@@ -164,14 +165,6 @@ See `FINDINGS.md` for the full narrative and `dashboard.html` for the interactiv
 
 ## Agentic Tool Usage
 
-Built using **Claude (Sonnet 4.6, Anthropic)** as the primary agentic coding assistant throughout:
+Built using **Claude (Sonnet 4.6, Anthropic)** as the primary agentic coding assistant:
 
-**Schema discovery before writing code.** Claude fetched the live CSV from `data.ca.gov` to verify exact column names before writing any SQL. This revealed that the permits file uses `lowercase_snake_case` while the enforcement file uses `"UPPER CASE WITH SPACES"` — a mismatch that would have caused silent failures if assumed from documentation.
-
-**Iterative debugging on real errors.** Three rounds of SQL fixes were made from actual DuckDB error messages (binder error on `GROUP BY 1`, `place_subtype` column not in `dim_facility`, normalisation scale mismatch in scoring). Claude diagnosed each from the error text and proposed targeted fixes rather than rewriting from scratch.
-
-**Data-driven dashboard.** After loading and profiling the `mart_facility_monthly` data, Claude computed all chart statistics (region breakdowns, year-over-year trends, severity by facility type) and generated the complete `dashboard.html` — Chart.js charts, NLP theme bars, filterable priority table — as a single client-ready file.
-
-**Critical review of outputs.** Claude reviewed the `top_25_facilities.csv` results and flagged: (1) the recency signal is effectively flat because the data stops at 2019, (2) ranks 18–21 are four buildings from one operator sweep and shouldn't consume 4 review slots, (3) rank 15 is a drinking water treatment plant, not a wastewater facility.
-
-Human judgment was applied at every step: validating join logic, reviewing results for anomalies, and adjusting scoring weights to reflect regulatory domain priorities.
+I acted as architect. Claude AI acted as implementation assistant producing code to my specification.
