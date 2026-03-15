@@ -1,26 +1,26 @@
-wdid,facility_name,place_county,facility_region,actions_12mo,penalty_12mo,actions_3mo,baseline_avg,baseline_std,anomaly_flag,priority_score,anomaly_reason
-1B80121OHUM,"College of the Redwoods, POTW",Humboldt,1,1,3505528.0,1,,,0,4.360064511773293,
-4B190106002,Hyperion WWTP,Los Angeles,4,1,2262248.5,0,1.0,,0,3.9122497152307094,
-1B10019WNME,"CDOT, US Highway 101 Willits Bypass - Cert",Mendocino,1,1,1954999.0,0,1.0,,0,3.8723537683066804,
-4SSO11388,County Sanitation District Joint Outfall CS,Los Angeles,4,1,1268502.8,0,1.0,,0,3.78804471954322,
-2SSO10175,Sam CS,San Mateo,2,2,600000.0,0,2.0,,0,3.755994181990393,
-5A060103001,Williams WWTP,Colusa,5S,6,96000.0,0,1.2,0.4472135954999579,0,3.6383314125442348,
-7A331333001,Golf Cntr Palm Desert 97-70013,Riverside,7,1,571302.0,0,1.0,,0,3.6204594955845084,
-5C240110001,Planada WWTF,Merced,5F,1,660000.0,0,1.0,,0,3.6089023230620585,
-5B030103001,City of Jackson WWTP,Amador,5S,3,178959.0,0,1.0,0.0,0,3.5728716588514216,
-9 000002849,"GW Extraction, Alvarado Hospital Medical Center",San Diego,9,2,54000.0,1,1.0,,0,3.4587037620072048,
-2 438668001,Lehigh Southwest and Hanson Limestone Quarry Cement Plant (Permanente),Santa Clara,2,1,301000.0,0,1.0,,0,3.4416269604328025,
-1B80081OHUM,Loleta WWTF,Humboldt,1,1,330000.0,0,1.0,,0,3.4309948986173704,
-5A310106007,Pleasant Grove WWTP,Placer,5S,4,48000.0,1,1.0,0.0,0,3.383975627827406,
-4B198901034,"Wells 201, 205 & Q2 Perchlorate Treatment",Los Angeles,4,1,192000.0,0,1.0,,0,3.34785471144686,
-9 000002395,"GW Extraction, Pinnacle Bayside Development, 15th & Island",San Diego,9,2,33000.0,1,1.0,,0,3.3355875867887868,
-5B391078003,Mountain House WWTP,San Joaquin,5S,6,15000.0,1,1.25,0.5,0,3.333051459788214,
-9 000003051,"GW Extraction, 1919 Pacific Highway, San Diego CA",San Diego,9,2,27000.0,1,1.0,,0,3.2854215963682503,
-5A290101001,Nevada City WWTP,Nevada,5S,3,54000.0,0,1.0,0.0,0,3.273331720783785,
-5B390100001,Deuel Vocational Institution,San Joaquin,5S,3,33000.0,1,1.0,0.0,0,3.262023102085568,
-9SSO10648,City Of Del Mar CS,San Diego,9,1,42500.0,1,,,0,3.2569222342078463,
-4DW0497,Marin WS,Marin,2,1,129250.0,0,1.0,,0,3.196660040003258,
-3 272009001,Uni-Kool Partners Vegetable Packing Facility - Salinas,Monterey,3,1,120000.0,0,1.0,,0,3.1746924192219783,
-4B191106001,"Royal Catering, El Monte",Los Angeles,4,1,45000.0,1,,,0,3.169226382364555,
-4B198800070,Route 105 Dewatering System - Garfield & Downey Pump Stations,Los Angeles,4,1,45000.0,1,1.0,,0,3.169226382364555,
-4B196000365,Office Building Parking Garage,Los Angeles,4,3,27000.0,0,1.0,0.0,0,3.125344710335652,
+priority_rank,priority_score_pct,why_prioritized,wdid,facility_name,county,region,place_type,actions_12mo,avg_severity_12mo,outstanding_penalties,escalation_zscore,current_active_actions,last_action_month,score_recency,score_frequency,score_severity,score_money,score_escalation,score_active
+1,72.5,Spiking enforcement rate AND high-severity actions recently,1B80121OHUM,"College of the Redwoods, POTW",Humboldt,1,Wastewater Treatment Facility,1,7.0,3505528.0,0.0,1,2019-02-01,100.0,16.7,100.0,55.6,100.0,100.0
+2,65.4,Recent spike vs 12-month baseline (escalating trend),5A34NP00043,"Sterling Caviar LLC, Elverta",Sacramento,5S,Aquaculture/Hatchery,5,3.8,6000.0,-0.33,0,2019-01-01,99.8,83.3,54.3,0.1,87.6,0.0
+3,64.3,Spiking enforcement rate AND high-severity actions recently,9SSO10648,City Of Del Mar CS,San Diego,9,Collection_System,1,7.0,42500.0,0.0,1,2019-02-01,100.0,16.7,100.0,0.7,100.0,100.0
+4,63.6,High volume of enforcement actions in last 12 months,5B391078003,Mountain House WWTP,San Joaquin,5S,Wastewater Treatment Facility,6,3.67,0.0,-1.83,0,2019-01-01,99.8,100.0,52.4,0.0,31.7,0.0
+5,63.3,Spiking enforcement rate AND high-severity actions recently,5A310106007,Pleasant Grove WWTP,Placer,5S,Wastewater Treatment Facility,4,5.0,0.0,-0.67,0,2018-11-01,99.4,66.7,71.4,0.0,75.2,0.0
+6,62.8,High volume of enforcement actions in last 12 months,5A060103001,Williams WWTP,Colusa,5S,Wastewater Treatment Facility,6,4.33,252000.0,-2.68,0,2018-10-01,99.2,100.0,61.9,4.0,0.0,0.0
+7,61.9,Recent spike vs 12-month baseline (escalating trend),5A580100002,Linda Cnty Water District WWTP,Yuba,5S,Wastewater Treatment Facility,4,4.0,21000.0,-0.33,0,2019-01-01,99.8,66.7,57.1,0.3,87.6,0.0
+8,61.8,Recent spike vs 12-month baseline (escalating trend),5B390104001,City of Manteca WW Quality Control Facility,San Joaquin,5S,Wastewater Treatment Facility,4,4.0,0.0,-0.33,0,2019-01-01,99.8,66.7,57.1,0.0,87.6,0.0
+9,61.1,Spiking enforcement rate AND high-severity actions recently,5A290105001,Donner Summit PUD WWTP,Nevada,5S,Wastewater Treatment Facility,3,5.67,12000.0,-0.67,0,2018-12-01,99.6,50.0,81.0,0.2,75.2,0.0
+10,61.1,Spiking enforcement rate AND high-severity actions recently,5B390100001,Deuel Vocational Institution,San Joaquin,5S,Wastewater Treatment Facility,3,5.67,6000.0,-0.67,0,2018-12-01,99.6,50.0,81.0,0.1,75.2,0.0
+11,60.9,Recent spike vs 12-month baseline (escalating trend),5B010000001,"Altamont/Resource Recovery Class II & III Landfills,Class II Surface Impoundment",Alameda,5S,Land fill,5,2.8,0.0,-0.78,0,2019-02-01,100.0,83.3,40.0,0.0,71.0,0.0
+12,60.7,Recent spike vs 12-month baseline (escalating trend),5B070105003,Discovery Bay WWTP,Contra Costa,5S,Wastewater Treatment Facility,4,4.0,34500.0,-0.67,0,2019-02-01,100.0,66.7,57.1,0.5,75.2,0.0
+13,60.0,High average severity of recent actions,2SSO10175,Sam CS,San Mateo,2,Collection_System,2,7.0,300000.0,-1.0,0,2018-08-01,98.8,33.3,100.0,4.8,62.7,0.0
+14,59.3,High average severity of recent actions,1B83136OHUM,Ferndale City POTW,Humboldt,1,Wastewater Treatment Facility,2,7.0,54500.0,-1.0,0,2018-05-01,98.2,33.3,100.0,0.9,62.7,0.0
+15,59.3,High average severity of recent actions,4B199000158,Hawthorne Drinking Water Treatment Plant,Los Angeles,4,Water Treatment Plant,2,7.0,0.0,-1.0,0,2018-07-01,98.6,33.3,100.0,0.0,62.7,0.0
+16,59.1,Spiking enforcement rate AND high-severity actions recently,4B191106001,"Royal Catering, El Monte",Los Angeles,4,"Service/Commercial Site, NEC",1,7.0,0.0,0.0,0,2019-01-01,99.8,16.7,100.0,0.0,100.0,0.0
+17,59.1,Spiking enforcement rate AND high-severity actions recently,7A130112012,Westmorland City WWTP,Imperial,7,Wastewater Treatment Facility,1,7.0,16666.0,0.0,0,2018-12-01,99.6,16.7,100.0,0.3,100.0,0.0
+20,59.1,Spiking enforcement rate AND high-severity actions recently,4B196100006,Babylon Apartments,Los Angeles,4,"Residence, NEC",1,7.0,0.0,0.0,0,2018-12-01,99.6,16.7,100.0,0.0,100.0,0.0
+19,59.1,Spiking enforcement rate AND high-severity actions recently,4B196000414,6500 Wilshire,Los Angeles,4,Domestic Site NEC,1,7.0,0.0,0.0,0,2018-12-01,99.6,16.7,100.0,0.0,100.0,0.0
+21,59.1,Spiking enforcement rate AND high-severity actions recently,4B196000620,8383 Wilshire,Los Angeles,4,Domestic Site NEC,1,7.0,0.0,0.0,0,2018-12-01,99.6,16.7,100.0,0.0,100.0,0.0
+18,59.1,Spiking enforcement rate AND high-severity actions recently,4B197500229,Beverly Atrium,Los Angeles,4,Domestic Site NEC,1,7.0,0.0,0.0,0,2018-12-01,99.6,16.7,100.0,0.0,100.0,0.0
+22,59.1,Spiking enforcement rate AND high-severity actions recently,2SSO10157,Montara CS,San Mateo,2,Collection_System,1,7.0,16050.0,0.0,0,2018-11-01,99.4,16.7,100.0,0.3,100.0,0.0
+23,59.0,Spiking enforcement rate AND high-severity actions recently,3 352000001,Granite Rock Arthur Wilson Quarry,San Benito,3,Sand and Gravel Mining,1,7.0,0.0,0.0,0,2018-11-01,99.4,16.7,100.0,0.0,100.0,0.0
+24,58.8,Recent spike vs 12-month baseline (escalating trend),9 000002849,"GW Extraction, Alvarado Hospital Medical Center",San Diego,9,Domestic Site NEC,2,4.5,54000.0,-0.67,1,2019-02-01,100.0,33.3,64.3,0.9,75.2,100.0
+25,58.8,High average severity of recent actions,4B196000350,Gateway East,Los Angeles,4,Domestic Site NEC,3,5.33,0.0,-1.0,0,2018-10-01,99.2,50.0,76.2,0.0,62.7,0.0
