@@ -1,0 +1,5 @@
+Join Key Discovery Report
+=========================
+
+NOTE: Update candidate_keys in pipeline.py to match actual raw column names.
+

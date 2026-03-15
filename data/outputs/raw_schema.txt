@@ -1,0 +1,76 @@
+== raw_permits_orders ==
+reg_measure_id	VARCHAR
+reg_measure_type	VARCHAR
+order_number	VARCHAR
+npdes_number_ca_number	VARCHAR
+program_category	VARCHAR
+wdid	VARCHAR
+major_minor	VARCHAR
+status	VARCHAR
+effective_date	VARCHAR
+expiration_review_date	VARCHAR
+termination_date	VARCHAR
+adoption_date	VARCHAR
+wdr_review_amend	VARCHAR
+wdr_review_revise_renew	VARCHAR
+wdr_review_rescind	VARCHAR
+wdr_review_no_action_required	VARCHAR
+wdr_review_pending	VARCHAR
+wdr_review_planned	VARCHAR
+status_enrollee	VARCHAR
+individual_general	VARCHAR
+fee_code	VARCHAR
+design_flow	VARCHAR
+threat_to_water_quality	VARCHAR
+complexity	VARCHAR
+pretreatment	VARCHAR
+population_ms4_acres	VARCHAR
+reclamation	VARCHAR
+facility_waste_type	VARCHAR
+facility_waste_type_2	VARCHAR
+number_of_amendments	VARCHAR
+facility_id	VARCHAR
+facility_region	VARCHAR
+facility_name	VARCHAR
+place_type	VARCHAR
+place_address	VARCHAR
+place_city	VARCHAR
+place_zip	VARCHAR
+place_county	VARCHAR
+latitude_decimal_degrees	VARCHAR
+longitude_decimal_degrees	VARCHAR
+
+== raw_enforcement_actions ==
+REGION	VARCHAR
+FACILITY ID	VARCHAR
+FACILITY NAME	VARCHAR
+AGENCY NAME	VARCHAR
+PLACE TYPE	VARCHAR
+PLACE SUBTYPE	VARCHAR
+PLACE LATITUDE	VARCHAR
+PLACE LONGITUDE	VARCHAR
+WDID	VARCHAR
+REG MEASURE ID	VARCHAR
+REG MEASURE TYPE	VARCHAR
+ENFORCEMENT ID (EID)	VARCHAR
+ORDER / RESOLUTION NUMBER	VARCHAR
+ENFORCEMENT ACTION TYPE	VARCHAR
+EFFECTIVE DATE	VARCHAR
+ADOPTION / ISSUANCE DATE	VARCHAR
+TERMINATION DATE	VARCHAR
+ACL ISSUANCE DATE	VARCHAR
+EPL ISSUANCE DATE	VARCHAR
+STATUS	VARCHAR
+TITLE	VARCHAR
+DESCRIPTION	VARCHAR
+PROGRAM	VARCHAR
+PROGRAM CATEGORY	VARCHAR
+TOTAL ASSESSMENT AMOUNT	VARCHAR
+INITIAL ASSESSED AMOUNT	VARCHAR
+LIABILITY $ AMOUNT	VARCHAR
+PROJECT $ AMOUNT	VARCHAR
+LIABILITY $ PAID	VARCHAR
+PROJECT $ COMPLETED	VARCHAR
+TOTAL $ PAID/COMPLETED AMOUNT	VARCHAR
+Location 1	VARCHAR
+
