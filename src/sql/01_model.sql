@@ -1,16 +1,15 @@
 -- =============================================================================
--- 01_model.sql
--- Raw → Staging → Dimensions + Fact
+-- 01_model.sql  —  Raw → Staging → Dimensions → Fact
 --
 -- Column names verified from raw_schema.txt:
 --
--- raw_permits_orders  (lowercase snake_case, no spaces):
+-- raw_permits_orders (lowercase snake_case):
 --   wdid, reg_measure_id, reg_measure_type, program_category, facility_id,
 --   facility_region, facility_name, place_type, place_address, place_city,
 --   place_zip, place_county, latitude_decimal_degrees, longitude_decimal_degrees,
 --   effective_date, termination_date, adoption_date, status
 --
--- raw_enforcement_actions  (UPPER CASE with spaces, must be quoted):
+-- raw_enforcement_actions (UPPER CASE with spaces, must be quoted):
 --   "REGION", "FACILITY ID", "FACILITY NAME", "AGENCY NAME", "PLACE TYPE",
 --   "PLACE SUBTYPE", "PLACE LATITUDE", "PLACE LONGITUDE", "WDID",
 --   "REG MEASURE ID", "REG MEASURE TYPE", "ENFORCEMENT ID (EID)",
@@ -23,7 +22,7 @@
 
 
 -- ---------------------------------------------------------------------------
--- STAGING: permits & orders  (lowercase snake_case source columns)
+-- STAGING: permits & orders
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE TABLE stg_permits AS
 SELECT
@@ -60,7 +59,7 @@ WHERE wdid IS NOT NULL
 
 
 -- ---------------------------------------------------------------------------
--- STAGING: enforcement actions  (UPPER CASE spaced source columns, quoted)
+-- STAGING: enforcement actions
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE TABLE stg_enforcement AS
 SELECT
@@ -83,18 +82,38 @@ SELECT
     TRIM("PROGRAM CATEGORY")                                    AS program_category,
     TRIM("TITLE")                                               AS title,
     TRIM("DESCRIPTION")                                         AS description,
-    COALESCE(
-        TRY_STRPTIME(TRIM("EFFECTIVE DATE"),           '%m/%d/%Y')::DATE,
-        TRY_STRPTIME(TRIM("EFFECTIVE DATE"),           '%Y-%m-%d')::DATE
-    )                                                           AS effective_date,
-    COALESCE(
+    -- Try 4-digit year first, then 2-digit year (12/29/16 -> 2016-12-29).
+    -- Dates before 1900 are misparsed 2-digit years (year 16 AD etc.) - set to NULL.
+    CASE WHEN COALESCE(
+        TRY_STRPTIME(TRIM("EFFECTIVE DATE"), '%m/%d/%Y')::DATE,
+        TRY_STRPTIME(TRIM("EFFECTIVE DATE"), '%m/%d/%y')::DATE,
+        TRY_STRPTIME(TRIM("EFFECTIVE DATE"), '%Y-%m-%d')::DATE
+    ) >= '1900-01-01'
+    THEN COALESCE(
+        TRY_STRPTIME(TRIM("EFFECTIVE DATE"), '%m/%d/%Y')::DATE,
+        TRY_STRPTIME(TRIM("EFFECTIVE DATE"), '%m/%d/%y')::DATE,
+        TRY_STRPTIME(TRIM("EFFECTIVE DATE"), '%Y-%m-%d')::DATE
+    ) END                                                       AS effective_date,
+    CASE WHEN COALESCE(
         TRY_STRPTIME(TRIM("ADOPTION / ISSUANCE DATE"), '%m/%d/%Y')::DATE,
+        TRY_STRPTIME(TRIM("ADOPTION / ISSUANCE DATE"), '%m/%d/%y')::DATE,
         TRY_STRPTIME(TRIM("ADOPTION / ISSUANCE DATE"), '%Y-%m-%d')::DATE
-    )                                                           AS adoption_date,
-    COALESCE(
-        TRY_STRPTIME(TRIM("TERMINATION DATE"),         '%m/%d/%Y')::DATE,
-        TRY_STRPTIME(TRIM("TERMINATION DATE"),         '%Y-%m-%d')::DATE
-    )                                                           AS termination_date,
+    ) >= '1900-01-01'
+    THEN COALESCE(
+        TRY_STRPTIME(TRIM("ADOPTION / ISSUANCE DATE"), '%m/%d/%Y')::DATE,
+        TRY_STRPTIME(TRIM("ADOPTION / ISSUANCE DATE"), '%m/%d/%y')::DATE,
+        TRY_STRPTIME(TRIM("ADOPTION / ISSUANCE DATE"), '%Y-%m-%d')::DATE
+    ) END                                                       AS adoption_date,
+    CASE WHEN COALESCE(
+        TRY_STRPTIME(TRIM("TERMINATION DATE"), '%m/%d/%Y')::DATE,
+        TRY_STRPTIME(TRIM("TERMINATION DATE"), '%m/%d/%y')::DATE,
+        TRY_STRPTIME(TRIM("TERMINATION DATE"), '%Y-%m-%d')::DATE
+    ) >= '1900-01-01'
+    THEN COALESCE(
+        TRY_STRPTIME(TRIM("TERMINATION DATE"), '%m/%d/%Y')::DATE,
+        TRY_STRPTIME(TRIM("TERMINATION DATE"), '%m/%d/%y')::DATE,
+        TRY_STRPTIME(TRIM("TERMINATION DATE"), '%Y-%m-%d')::DATE
+    ) END                                                       AS termination_date,
     TRY_CAST(REPLACE(REPLACE(TRIM("TOTAL ASSESSMENT AMOUNT"),      '$',''),',','') AS DOUBLE) AS total_assessment_amount,
     TRY_CAST(REPLACE(REPLACE(TRIM("INITIAL ASSESSED AMOUNT"),      '$',''),',','') AS DOUBLE) AS initial_assessed_amount,
     TRY_CAST(REPLACE(REPLACE(TRIM("LIABILITY $ AMOUNT"),           '$',''),',','') AS DOUBLE) AS liability_amount,
@@ -109,12 +128,8 @@ WHERE "WDID" IS NOT NULL
 
 -- ---------------------------------------------------------------------------
 -- DIM: facility
--- Coalesced from both sources. Facilities that appear only in enforcement
--- (no permit record) still get a row with whatever metadata is available.
---
--- FIX: use explicit column names in GROUP BY, not positional GROUP BY 1,
--- to avoid DuckDB's "column referenced before defined" binder error when
--- a source column and an alias share the same name (e.g. "region").
+-- Built from both sources via UNION so facilities that appear only in
+-- enforcement (no permit record) still get a row.
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE TABLE dim_facility AS
 WITH from_permits AS (
@@ -156,91 +171,24 @@ all_wdids AS (
 )
 SELECT
     u.wdid,
-    COALESCE(p.facility_name,  e.facility_name)  AS facility_name,
-    COALESCE(e.agency_name,    p.agency_name)    AS agency_name,
-    COALESCE(p.region,         e.region)         AS region,
+    COALESCE(p.facility_name, e.facility_name)  AS facility_name,
+    COALESCE(e.agency_name,   p.agency_name)    AS agency_name,
+    COALESCE(p.region,        e.region)         AS region,
     p.county,
     p.city,
     p.zip_code,
     p.place_address,
-    COALESCE(p.place_type,     e.place_type)     AS place_type,
-    COALESCE(p.latitude,       e.latitude)       AS latitude,
-    COALESCE(p.longitude,      e.longitude)      AS longitude
+    COALESCE(p.place_type,    e.place_type)     AS place_type,
+    COALESCE(p.latitude,      e.latitude)       AS latitude,
+    COALESCE(p.longitude,     e.longitude)      AS longitude
 FROM all_wdids u
 LEFT JOIN from_permits     p ON u.wdid = p.wdid
 LEFT JOIN from_enforcement e ON u.wdid = e.wdid;
 
 
 -- ---------------------------------------------------------------------------
--- DIM: action type  (severity rank + monetary flag)
--- ---------------------------------------------------------------------------
-CREATE OR REPLACE TABLE dim_action_type AS
-SELECT DISTINCT
-    enforcement_action_type,
-    CASE enforcement_action_type
-        WHEN 'Oral Communication'           THEN 1
-        WHEN 'Staff Enforcement Letter'     THEN 2
-        WHEN '13267 Letter'                 THEN 2
-        WHEN 'Notice to Comply'             THEN 2
-        WHEN 'Expedited Payment Letter'     THEN 2
-        WHEN 'Notice of Violation'          THEN 3
-        WHEN 'Third Party Action'           THEN 3
-        WHEN 'Complaint'                    THEN 4
-        WHEN 'Order'                        THEN 4
-        WHEN 'Stipulated Order'             THEN 4
-        WHEN 'Cease and Desist Order'       THEN 5
-        WHEN 'Clean-up and Abatement Order' THEN 5
-        WHEN 'Mandatory Minimum Penalty'    THEN 6
-        WHEN 'Admin Civil Liability'        THEN 7
-        WHEN 'Formal Refer to Attorney Gen' THEN 7
-        ELSE 3
-    END AS severity_rank,
-    CASE
-        WHEN enforcement_action_type IN (
-            'Admin Civil Liability',
-            'Mandatory Minimum Penalty',
-            'Clean-up and Abatement Order',
-            'Expedited Payment Letter'
-        ) THEN 1
-        ELSE 0
-    END AS is_monetary
-FROM stg_enforcement
-WHERE enforcement_action_type IS NOT NULL
-  AND enforcement_action_type <> '';
-
-
--- ---------------------------------------------------------------------------
--- DIM: time  (date spine covering full range of enforcement dates)
--- ---------------------------------------------------------------------------
-CREATE OR REPLACE TABLE dim_time AS
-WITH bounds AS (
-    SELECT
-        MIN(effective_date) AS min_d,
-        MAX(effective_date) AS max_d
-    FROM stg_enforcement
-    WHERE effective_date IS NOT NULL
-)
-SELECT
-    d::DATE                             AS date_day,
-    EXTRACT(YEAR    FROM d)::INT        AS year,
-    EXTRACT(MONTH   FROM d)::INT        AS month,
-    EXTRACT(QUARTER FROM d)::INT        AS quarter,
-    DATE_TRUNC('month', d)::DATE        AS month_start,
-    CASE
-        WHEN EXTRACT(MONTH FROM d) >= 7
-        THEN EXTRACT(YEAR  FROM d)::INT
-        ELSE EXTRACT(YEAR  FROM d)::INT - 1
-    END                                 AS fiscal_year
-FROM generate_series(
-    (SELECT min_d FROM bounds),
-    (SELECT max_d FROM bounds),
-    INTERVAL '1 day'
-) t(d);
-
-
--- ---------------------------------------------------------------------------
 -- FACT: one row per enforcement action
--- severity_rank and is_monetary are joined in here so marts don't re-join.
+-- Removed: severity_rank, is_monetary (not sourced from the dataset)
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE TABLE fact_enforcement AS
 SELECT
@@ -248,8 +196,6 @@ SELECT
     e.wdid,
     e.reg_measure_id,
     e.enforcement_action_type,
-    COALESCE(a.severity_rank, 3)        AS severity_rank,
-    COALESCE(a.is_monetary,   0)        AS is_monetary,
     e.effective_date,
     e.adoption_date,
     e.termination_date,
@@ -270,6 +216,4 @@ SELECT
     )                                       AS outstanding_amount,
     e.title,
     e.description
-FROM stg_enforcement e
-LEFT JOIN dim_action_type a
-    ON e.enforcement_action_type = a.enforcement_action_type;
+FROM stg_enforcement e;

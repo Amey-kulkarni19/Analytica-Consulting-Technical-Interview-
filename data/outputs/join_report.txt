@@ -1,5 +1,78 @@
-Join Key Discovery Report
-=========================
+=== raw_permits_orders ===
+  reg_measure_id
+  reg_measure_type
+  order_number
+  npdes_number_ca_number
+  program_category
+  wdid
+  major_minor
+  status
+  effective_date
+  expiration_review_date
+  termination_date
+  adoption_date
+  wdr_review_amend
+  wdr_review_revise_renew
+  wdr_review_rescind
+  wdr_review_no_action_required
+  wdr_review_pending
+  wdr_review_planned
+  status_enrollee
+  individual_general
+  fee_code
+  design_flow
+  threat_to_water_quality
+  complexity
+  pretreatment
+  population_ms4_acres
+  reclamation
+  facility_waste_type
+  facility_waste_type_2
+  number_of_amendments
+  facility_id
+  facility_region
+  facility_name
+  place_type
+  place_address
+  place_city
+  place_zip
+  place_county
+  latitude_decimal_degrees
+  longitude_decimal_degrees
 
-NOTE: Update candidate_keys in pipeline.py to match actual raw column names.
+=== raw_enforcement_actions ===
+  REGION
+  FACILITY ID
+  FACILITY NAME
+  AGENCY NAME
+  PLACE TYPE
+  PLACE SUBTYPE
+  PLACE LATITUDE
+  PLACE LONGITUDE
+  WDID
+  REG MEASURE ID
+  REG MEASURE TYPE
+  ENFORCEMENT ID (EID)
+  ORDER / RESOLUTION NUMBER
+  ENFORCEMENT ACTION TYPE
+  EFFECTIVE DATE
+  ADOPTION / ISSUANCE DATE
+  TERMINATION DATE
+  ACL ISSUANCE DATE
+  EPL ISSUANCE DATE
+  STATUS
+  TITLE
+  DESCRIPTION
+  PROGRAM
+  PROGRAM CATEGORY
+  TOTAL ASSESSMENT AMOUNT
+  INITIAL ASSESSED AMOUNT
+  LIABILITY $ AMOUNT
+  PROJECT $ AMOUNT
+  LIABILITY $ PAID
+  PROJECT $ COMPLETED
+  TOTAL $ PAID/COMPLETED AMOUNT
+  Location 1
 
+WDID join match: 31,058 / 35,954  (86.4%)
+Unmatched (enforcement rows with no permit record): 4,896

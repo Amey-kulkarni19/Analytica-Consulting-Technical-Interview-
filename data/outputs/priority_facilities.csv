@@ -1,0 +1,26 @@
+rank,wdid,facility_name,region,county,place_type,total_actions,actions_last_3yr,most_recent_action,first_action,total_assessed,total_paid,outstanding_balance
+1,6SSO11425,Victorville SD CS,6B,San Bernardino,Collection_System,2,1,2016-07-01,2015-12-01,6300250.0,0.0,6300250.0
+2,1B80121OHUM,"College of the Redwoods, POTW",1,Humboldt,Wastewater Treatment Facility,8,1,2019-02-06,2000-10-17,3505528.0,0.0,3505528.0
+3,5A171041001,Harbor View Mutual Water Company,5S,Lake,Water Treatment Plant,3,0,2013-09-04,2008-10-14,2844000.0,0.0,2844000.0
+4,4SSO11388,County Sanitation District Joint Outfall CS,4,Los Angeles,Collection_System,4,1,2018-07-13,2010-02-17,1268502.8,0.0,1268502.8
+5,5D100124001,Malaga CWD WWTF,5F,Fresno,Wastewater Treatment Facility,25,2,2016-07-18,2000-01-10,2221728.0,975835.0,1245893.0
+6,5A510100001,Live Oak City WWTP,5S,Sutter,Wastewater Treatment Facility,49,5,2018-10-22,1999-04-30,2013000.0,879000.0,1134000.0
+7,4B190106002,Hyperion WWTP,4,Los Angeles,Wastewater Treatment Facility,10,1,2018-04-16,1985-08-23,2452298.5,1321174.5,1131124.0
+8,1B77005OHUM,"Freshwater Tissue Company, Samoa Pulp Mill",1,Humboldt,Pulp and Paper,23,0,2009-04-23,1988-01-28,982000.0,66000.0,916000.0
+9,2 417022002,Calera Creek Water Recycling Plant,2,San Mateo,Wastewater Treatment Facility,20,1,2016-07-28,2001-09-19,2696033.0,1864033.0,832000.0
+10,5A450103001,Clear Creek WWTP,5R,Shasta,Wastewater Treatment Facility,33,3,2017-05-12,1991-03-22,1120500.0,320500.0,800000.0
+11,2SSO10183,San Mateo CIty CS,2,San Mateo,Collection_System,5,3,2018-05-24,2009-03-11,950000.0,190000.0,760000.0
+12,5A310302001,Finger's Class III LF Closure,5S,Placer,Land fill,8,0,2015-08-26,1999-10-14,677531.0,0.0,677531.0
+13,4B196000421,Doheny 9090 Wilshire Building,4,Los Angeles,Domestic Site NEC,4,0,2014-06-30,2007-11-07,675000.0,0.0,675000.0
+14,4SSO10436,South Pasadena City CS,4,Los Angeles,Collection_System,2,0,2012-01-17,2010-06-29,902419.72,227419.72,675000.0
+15,7A130109011,Niland SD WWTP,7,Imperial,Wastewater Treatment Facility,59,1,2017-03-09,1999-11-05,724771.0900000001,62573.990000000005,662197.1000000001
+16,5C240110001,Planada WWTF,5F,Merced,Wastewater Treatment Facility,13,1,2018-05-10,1999-09-09,1086450.0,426450.0,660000.0
+17,2 494009001,Sonoma Valley County SD WWTP,2,Sonoma,Wastewater Treatment Facility,18,1,2016-09-28,1998-02-18,1242300.0,665650.0,576650.0
+18,2SSO10172,Ross Valley Sanitary District CS,2,Marin,Collection_System,5,2,2018-09-14,2012-06-20,1289730.0,807350.0,482380.0
+19,5A040100001,City of Biggs WWTP,5R,Butte,Wastewater Treatment Facility,23,3,2017-12-11,1995-04-28,570000.0,108000.0,462000.0
+20,6A181554001,Susanville Sanitary District WWTP,6A,Lassen,Wastewater Treatment Facility,17,0,2011-11-23,1994-03-15,483000.0,30000.0,453000.0
+21,7A130111013,Seeley CWD WWTP,7,Imperial,Wastewater Treatment Facility,74,14,2018-02-07,1999-11-05,464380.35,14380.35,450000.0
+22,3 400105001,Paso Robles WWTP,3,San Luis Obispo,Wastewater Treatment Facility,12,4,2018-02-16,2001-05-01,975000.0,552000.0,423000.0
+23,6A099806N01,Tahoe Tom's Gasoline Station,6A,,Manufacturing,8,0,2009-10-14,1998-06-15,543900.0,131000.0,412900.0
+24,5A310104007,Placer Cnty SMD No 1 WWTP,5S,Placer,Wastewater Treatment Facility,59,4,2017-04-18,1996-03-22,900000.0,498000.0,402000.0
+25,2 438668001,Lehigh Southwest and Hanson Limestone Quarry Cement Plant (Permanente),2,Santa Clara,Sand and Gravel Mining,6,5,2018-08-27,2014-05-01,946500.0,548250.0,398250.0
