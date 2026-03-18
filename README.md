@@ -10,7 +10,6 @@
 ```bash
 pip install -r requirements.txt
 python pipeline.py run
-python -m streamlit run app.py
 ```
 
 First run downloads ~30 MB of raw CSV. Subsequent runs skip the download.
