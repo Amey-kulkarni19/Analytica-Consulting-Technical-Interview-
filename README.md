@@ -66,6 +66,30 @@ fact_enforcement  ──<  mart_facility_monthly
 
 ---
 
+## Enriched mart
+
+`mart_facility_monthly` is the final enriched mart. It is built by joining 
+`fact_enforcement` to `dim_facility`, producing one row per facility per month 
+with enforcement event data and facility metadata combined in a single 
+pre-aggregated table.
+
+Both dimension tables contribute:
+- `dim_facility` provides facility metadata — name, region, county, place type
+- `dim_action_type` contributes via `fact_enforcement`, where `is_formal` is 
+  already denormalised in, so the mart inherits it as `formal_count`
+
+Columns produced:
+- Facility metadata: `wdid`, `facility_name`, `region`, `county`, `city`, `place_type`, `latitude`, `longitude`
+- Time: `month`, `year`
+- Activity: `enforcement_count`, `formal_count`, `active_count`
+- Financials: `total_assessment`, `total_liability`, `total_paid`, `total_outstanding`
+
+This mart is the primary input for both the dashboard and the answer query 
+(`03_answer.sql`). It is exported to `data/marts/mart_facility_monthly.csv` 
+after each pipeline run.
+
+---
+
 ## Ranking logic
 
 Facilities are ranked by three observable dimensions in order:
@@ -112,6 +136,11 @@ Single file, zero server setup, handles the full dataset in seconds. A reviewer 
 
 - **Severity ranking** — the dataset lists action types but provides no official severity hierarchy. I chose not to assign ranks that I cannot source from the data or documentation.
 - **ML risk scoring** — added complexity without changing the top-25 outcome in a meaningful way.
+
+---
+## Git History
+<img width="793" height="626" alt="image" src="https://github.com/user-attachments/assets/6ac3d514-7b81-4eca-97f9-3f421b9baa52" />
+
 
 ---
 
