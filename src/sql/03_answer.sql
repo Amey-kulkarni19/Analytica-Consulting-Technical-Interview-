@@ -20,6 +20,7 @@ WITH facility_summary AS (
         f.place_type,
 
         COUNT(*)                                            AS total_actions,
+        SUM(CASE WHEN fe.is_formal THEN 1 ELSE 0 END)       AS formal_actions,
         MAX(fe.effective_date)                              AS most_recent_action,
         MIN(fe.effective_date)                              AS first_action,
 
@@ -50,6 +51,7 @@ SELECT
     county,
     place_type,
     total_actions,
+    formal_actions,
     actions_last_3yr,
     most_recent_action,
     first_action,

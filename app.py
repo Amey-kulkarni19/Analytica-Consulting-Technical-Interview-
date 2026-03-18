@@ -133,7 +133,7 @@ with tab_top25:
     st.dataframe(
         display[[
             "rank", "facility_name", "region", "county",
-            "total_actions", "actions_last_3yr",
+            "total_actions", "formal_actions", "actions_last_3yr",
             "most_recent_action", "total_assessed", "total_paid", "outstanding_balance",
         ]].rename(columns={
             "rank":               "Rank",
@@ -141,6 +141,7 @@ with tab_top25:
             "region":             "Region",
             "county":             "County",
             "total_actions":      "Total actions",
+            "formal_actions":     "Formal actions",
             "actions_last_3yr":   "Actions (last 3yr)",
             "most_recent_action": "Most recent",
             "total_assessed":     "Assessed",

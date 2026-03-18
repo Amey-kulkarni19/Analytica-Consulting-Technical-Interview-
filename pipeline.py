@@ -225,7 +225,7 @@ def step_model() -> None:
             raise RuntimeError(f"Missing: {sql}")
         print(f"[model] running {sql.name} ...")
         run_sql_file(con, sql)
-        for t in ("stg_enforcement", "stg_permits", "dim_facility", "fact_enforcement"):
+        for t in ("stg_enforcement", "stg_permits", "dim_facility", "dim_action_type", "fact_enforcement"):
             if table_exists(con, t):
                 rowcount(con, t)
         print("[model] complete\n")

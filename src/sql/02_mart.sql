@@ -21,6 +21,7 @@ SELECT
     EXTRACT(YEAR FROM f.effective_date)::INT         AS year,
 
     COUNT(*)                                         AS enforcement_count,
+    SUM(CASE WHEN f.is_formal THEN 1 ELSE 0 END)     AS formal_count,
 
     SUM(f.total_assessment_amount)                   AS total_assessment,
     SUM(f.liability_amount)                          AS total_liability,

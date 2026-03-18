@@ -187,8 +187,35 @@ LEFT JOIN from_enforcement e ON u.wdid = e.wdid;
 
 
 -- ---------------------------------------------------------------------------
+-- DIM: action type
+-- One row per distinct enforcement action type.
+-- is_formal distinguishes binding legal actions from informal communications.
+-- This is a structural distinction (not a severity judgment):
+--   informal = administrative notices with no legal obligation to respond
+--   formal   = orders, penalties, referrals that carry legal weight
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE TABLE dim_action_type AS
+SELECT DISTINCT
+    enforcement_action_type,
+    CASE
+        WHEN enforcement_action_type IN (
+            'Oral Communication',
+            'Staff Enforcement Letter',
+            '13267 Letter',
+            'Notice to Comply',
+            'Notice of Violation',
+            'Notice of Stormwater Noncomp'
+        ) THEN FALSE
+        ELSE TRUE
+    END AS is_formal
+FROM stg_enforcement
+WHERE enforcement_action_type IS NOT NULL
+  AND enforcement_action_type <> '';
+
+
+-- ---------------------------------------------------------------------------
 -- FACT: one row per enforcement action
--- Removed: severity_rank, is_monetary (not sourced from the dataset)
+-- is_formal joined in from dim_action_type so marts do not need to re-join.
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE TABLE fact_enforcement AS
 SELECT
@@ -196,6 +223,7 @@ SELECT
     e.wdid,
     e.reg_measure_id,
     e.enforcement_action_type,
+    COALESCE(a.is_formal, FALSE)            AS is_formal,
     e.effective_date,
     e.adoption_date,
     e.termination_date,
@@ -216,4 +244,6 @@ SELECT
     )                                       AS outstanding_amount,
     e.title,
     e.description
-FROM stg_enforcement e;
+FROM stg_enforcement e
+LEFT JOIN dim_action_type a
+    ON e.enforcement_action_type = a.enforcement_action_type;
