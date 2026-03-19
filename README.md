@@ -1,6 +1,6 @@
 # CA Wastewater Enforcement — Prioritization Pipeline
 
-**Dataset:** CA State Water Resources Control Board (CIWQS) — public enforcement and permits data  
+**Dataset:** CA State Water Resources Control Board (CIWQS) public enforcement and permits data  
 **Client question:** *"We can only review 25 facilities next quarter. Which should we prioritize, and why?"*
 
 ---
@@ -29,7 +29,7 @@ The water board issues thousands of enforcement actions each year but has limite
 | `wastewater-enforcement-actions.csv` | ~44,500 | One row per enforcement action |
 | `reg_meas_export_wastewaterpermitsorders.csv` | ~105,000 | One row per permit or regulatory order |
 
-The two files are linked by **WDID** (Waste Discharger Identification Number) — the water board's facility identifier. This was confirmed by inspecting the column headers in `data/outputs/raw_schema.txt`. The profiler also computes the actual WDID match rate between the two files and writes it to `data/outputs/join_report.txt`. Some facilities appear in enforcement but have no permit record — they are kept in the model rather than dropped.
+The two files are linked by **WDID** (Waste Discharger Identification Number) — the water board's facility identifier. This was confirmed by inspecting the column headers in `data/outputs/raw_schema.txt`. The profiler also computes the actual WDID match rate between the two files and writes it to `data/outputs/join_report.txt`. Some facilities appear in enforcement but have no permit record they are kept in the model rather than dropped.
 
 All WDID values are normalised to `UPPER(TRIM(...))` before joining to handle whitespace and case inconsistencies in the raw data.
 
@@ -74,7 +74,7 @@ with enforcement event data and facility metadata combined in a single
 pre-aggregated table.
 
 Both dimension tables contribute:
-- `dim_facility` provides facility metadata — name, region, county, place type
+- `dim_facility` provides facility metadata name, region, county, place type
 - `dim_action_type` contributes via `fact_enforcement`, where `is_formal` is 
   already denormalised in, so the mart inherits it as `formal_count`
 
