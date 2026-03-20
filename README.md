@@ -1,4 +1,4 @@
-# CA Wastewater Enforcement — Prioritization Pipeline
+# CA Wastewater Enforcement Prioritization Pipeline
 
 **Dataset:** CA State Water Resources Control Board (CIWQS) public enforcement and permits data  
 **Client question:** *"We can only review 25 facilities next quarter. Which should we prioritize, and why?"*
@@ -29,7 +29,7 @@ The water board issues thousands of enforcement actions each year but has limite
 | `wastewater-enforcement-actions.csv` | ~44,500 | One row per enforcement action |
 | `reg_meas_export_wastewaterpermitsorders.csv` | ~105,000 | One row per permit or regulatory order |
 
-The two files are linked by **WDID** (Waste Discharger Identification Number) — the water board's facility identifier. This was confirmed by inspecting the column headers in `data/outputs/raw_schema.txt`. The profiler also computes the actual WDID match rate between the two files and writes it to `data/outputs/join_report.txt`. Some facilities appear in enforcement but have no permit record they are kept in the model rather than dropped.
+The two files are linked by **WDID** (Waste Discharger Identification Number) the water board's facility identifier. This was confirmed by inspecting the column headers in `data/outputs/raw_schema.txt`. The profiler also computes the actual WDID match rate between the two files and writes it to `data/outputs/join_report.txt`. Some facilities appear in enforcement but have no permit record they are kept in the model rather than dropped.
 
 All WDID values are normalised to `UPPER(TRIM(...))` before joining to handle whitespace and case inconsistencies in the raw data.
 
@@ -106,13 +106,12 @@ No composite score. Each dimension is shown as a separate column so the reasonin
 
 | Check | Result |
 |---|---|
-| WDID null rate in enforcement | 0 of 35,954 rows — no nulls |
-| Join match rate (WDID) | Computed at runtime — see `data/outputs/join_report.txt` |
-| Date range | 1990–2019 after filtering misparsed dates (some raw values like `12/29/16` parsed as year 16 AD — treated as NULL) |
-| Zero assessment amount | 33,109 of 35,954 rows — expected, most action types carry no financial penalty |
-| Zero outstanding balance | 35,592 of 35,954 rows — outstanding balance ranking is driven by a small number of high-value facilities |
+| WDID null rate in enforcement | 0 of 35,954 rows no nulls |
+| Join match rate (WDID) | Computed at runtime see `data/outputs/join_report.txt` |
+| Zero assessment amount | 33,109 of 35,954 rows expected, most action types carry no financial penalty |
+| Zero outstanding balance | 35,592 of 35,954 rows outstanding balance ranking is driven by a small number of high-value facilities |
 | Negative outstanding balance | Floored to zero via `GREATEST(..., 0)` |
-| Region values | 12 distinct codes (1, 2, 3, 4, 5F, 5R, 5S, 6A, 6B, 7, 8, 9) plus 436 permits-only facilities labelled NA — excluded from regional charts |
+| Region values | 12 distinct codes (1, 2, 3, 4, 5F, 5R, 5S, 6A, 6B, 7, 8, 9) plus 436 permits-only facilities labelled NA excluded from regional charts |
 | Duplicate EIDs | Confirmed unique after normalisation |
 
 ---
@@ -125,9 +124,8 @@ Single file, zero server setup, handles the full dataset in seconds. A reviewer 
 
 ## What I would do with more time
 
-- Convert SQL to dbt for lineage, column docs, and data tests
-- Join the inspections file (~37 MB, same data portal) — inspection ratings are a leading indicator that precedes formal enforcement
-- Investigate whether multiple WDIDs share a single operator — the dataset has an agency name field that was not used in this model
+- Join the inspections file (~37 MB, same data portal) inspection ratings are a leading indicator that precedes formal enforcement
+- Investigate whether multiple WDIDs share a single operator the dataset has an agency name field that was not used in this model
 - Cross-reference against the live CIWQS API, as the dataset cuts off at 2019
 
 ---
